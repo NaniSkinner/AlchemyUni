@@ -60,3 +60,18 @@ async function signMessage(msg) {
 }
 
 module.exports = signMessage;
+
+//Recover Key from Signature
+
+const secp = require("ethereum-cryptography/secp256k1");
+const hashMessage = require("./hashMessage");
+
+async function recoverKey(msg, signature, recoveryBit) {
+  // Step 1: Hash the message (just like we did when signing)
+  const messageHash = hashMessage(msg);
+
+  // Step 2: Use the recovery method to find the public key
+  return secp.recoverPublicKey(messageHash, signature, recoveryBit);
+}
+
+module.exports = recoverKey;
