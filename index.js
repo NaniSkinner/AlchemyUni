@@ -41,3 +41,22 @@ const bytes = utf8ToBytes("Vote Yes on Proposal 327");
 const hash = keccak256(bytes);
 
 console.log(toHex(hash)); // 928c3f25193b338b89d5646bebbfa2436c5daa1d189f9c565079dcae379a43be
+
+// Public Key Cryptography - Signing Messages
+
+const secp = require("ethereum-cryptography/secp256k1");
+// Step #1 - Hash it using the hasMessage function
+const hashMessage = require("./hashMessage");
+
+const PRIVATE_KEY =
+  "6b911fd37cdf5c81d4c0adb1ab7fa822ed253ab0ad9aa18d77257c88b29b718e";
+
+async function signMessage(msg) {
+  // Step 1: Hash the message
+  const messageHash = hashMessage(msg);
+
+  // Step 2: Sign the hash with the private key and include recovery bit
+  return secp.sign(messageHash, PRIVATE_KEY, { recovered: true });
+}
+
+module.exports = signMessage;
