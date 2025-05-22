@@ -75,3 +75,22 @@ async function recoverKey(msg, signature, recoveryBit) {
 }
 
 module.exports = recoverKey;
+
+//Get Ethereum Address from Public Key
+const secp = require("ethereum-cryptography/secp256k1");
+const { keccak256 } = require("ethereum-cryptography/keccak");
+
+function getAddress(publicKey) {
+  // Step 1: Take the first byte off the public key (it's just a format indicator)
+  const slicedKey = publicKey.slice(1);
+
+  // Step 2: Hash the remaining bytes with keccak256
+  const hashedKey = keccak256(slicedKey); // containes the x and y coordinated of the elliptic curve that represents the public key
+
+  // Step 3: Take the last 20 bytes of the hash (Ethereum addresses are 20 bytes)
+  // To get the last 20 bytes, we slice from byte 12 to the end
+  // (since keccak256 produces 32 bytes, and 32 - 20 = 12)
+  return hashedKey.slice(-20);
+}
+
+module.exports = getAddress;
