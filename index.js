@@ -122,3 +122,41 @@ module.exports = {
   blocks,
   mempool,
 };
+
+//MINE BLOCK
+
+const SHA256 = require("crypto-js/sha256");
+const TARGET_DIFFICULTY =
+  BigInt(0x0fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff);
+const MAX_TRANSACTIONS = 10;
+
+const mempool = [];
+const blocks = [];
+
+function addTransaction(transaction) {
+  // TODO: add transaction to mempool
+  mempool.push(transaction);
+}
+
+function mine() {
+  // Create a new block with an id property
+  // The id is set to the current block height (length of blocks array)
+  const block = {
+    id: blocks.length,
+  };
+
+  // Add the new block to the blocks array
+  blocks.push(block);
+
+  // Return the newly created block
+  return block;
+}
+
+module.exports = {
+  TARGET_DIFFICULTY,
+  MAX_TRANSACTIONS,
+  addTransaction,
+  mine,
+  blocks,
+  mempool,
+};
