@@ -117,28 +117,41 @@ function mine() {
   const block = {
     id: blocks.length,
     transactions: [],
+    nonce: 0, // adding a nonce property starting at 0
   };
-
   //Pulling the transactions from mempool //Remove each transaction .shift()
   while (block.transactions.length < MAX_TRANSACTIONS && mempool.length > 0) {
-    const tx = mempool.shift(); //remove from mempool
+    const tx = mempool.shift(); //remove from meepool
     block.transactions.push(tx); // add to block
   }
 
-  // add the new block to the blocks array
-  // step 1: Convert the block to a string using JSON.stringify
-  const blockString = JSON.stringify(block);
+  // Keep changing the nonce until we find a hash that is less than the TARGET_DIFFICULTY
+  let hash;
+  while (true) {
+    const blockString = JSON.stringify(block);
 
-  //Step 2: Create a SHA256 hash of the stringified block
-  const hash = SHA256(blockString).toString();
+    // Create a SHA256 hash of the stringified block
+    hash = SHA256(blockString).toString();
 
-  //Step 3: Add the hash to the block object
+    // Convert hash to BigInt for comparison with TARGET_DIFFICULTY
+    const hashInt = BigInt(`0x${hash}`);
+
+    // If hash is less than TARGET_DIFFICULTY, we found a valid block
+    if (hashInt < TARGET_DIFFICULTY) {
+      break;
+    }
+
+    // Otherwise, increment nonce and try again
+    block.nonce++;
+  }
+
+  // Add the hash to the block object
   block.hash = hash;
 
-  //Add the new block to the blocks array
+  // Add the new block to the blocks array
   blocks.push(block);
 
-  // retuen the newly created block
+  // Return the newly created block
   return block;
 }
 
@@ -216,30 +229,48 @@ const mempool = [];
 const blocks = [];
 
 function addTransaction(transaction) {
+  // TODO: add transaction to mempool
   mempool.push(transaction);
 }
 
 function mine() {
-  // Create a new block with an id property
+  // TODO: mine a block
+  // create a new block with an id property
+  // the a id is set to the current block height (lenght of block array)
   const block = {
     id: blocks.length,
-    transactions: [], // Initialize empty transactions array
+    transactions: [],
+    nonce: 0, // Initialize nonce at 0
   };
-
-  // Add up to MAX_TRANSACTIONS from the mempool to the block
-  const txCount = Math.min(MAX_TRANSACTIONS, mempool.length);
-  for (let i = 0; i < txCount; i++) {
-    const tx = mempool.shift(); // Remove transaction from mempool
-    block.transactions.push(tx); // Add it to the block
+  //Pulling the transactions from mempool //Remove each transaction .shift()
+  while (block.transactions.length < MAX_TRANSACTIONS && mempool.length > 0) {
+    const tx = mempool.shift(); //remove from meepool
+    block.transactions.push(tx); // add to block
   }
 
-  // Convert the block to a string using JSON.stringify
-  const blockString = JSON.stringify(block);
+  let hash;
 
-  // Create a SHA256 hash of the stringified block
-  const hash = SHA256(blockString).toString();
+  // Mine the block by changing nonce until hash is less than TARGET_DIFFICULTY
+  while (true) {
+    // step 1: Convert the block to a string using JSON.stringify
+    const blockString = JSON.stringify(block);
 
-  // Add the hash to the block object
+    // Step 2: Create a SHA256 hash of the stringified block
+    hash = SHA256(blockString).toString();
+
+    // Convert hash to BigInt for comparison with TARGET_DIFFICULTY
+    const hashInt = BigInt(`0x${hash}`);
+
+    // If hash is less than TARGET_DIFFICULTY, we've found a valid block
+    if (hashInt < TARGET_DIFFICULTY) {
+      break;
+    }
+
+    // Otherwise, increment nonce and try again
+    block.nonce++;
+  }
+
+  // Step 3: Add the hash to the block object
   block.hash = hash;
 
   // Add the new block to the blocks array
@@ -257,3 +288,5 @@ module.exports = {
   blocks,
   mempool,
 };
+
+// Difficulty - geting the work part or proof of work
