@@ -111,25 +111,34 @@ function addTransaction(transaction) {
 }
 
 function mine() {
-  // Create a new block with an id property
-  // The id is set to the current block height (length of blocks array)
+  // TODO: mine a block
+  // create a new block with an id property
+  // the a id is set to the current block height (lenght of block array)
   const block = {
     id: blocks.length,
+    transactions: [],
   };
 
-  // Step 1: Convert the block to a string using JSON.stringify
+  //Pulling the transactions from mempool //Remove each transaction .shift()
+  while (block.transactions.length < MAX_TRANSACTIONS && mempool.length > 0) {
+    const tx = mempool.shift(); //remove from mempool
+    block.transactions.push(tx); // add to block
+  }
+
+  // add the new block to the blocks array
+  // step 1: Convert the block to a string using JSON.stringify
   const blockString = JSON.stringify(block);
 
-  // Step 2: Create a SHA256 hash of the stringified block
+  //Step 2: Create a SHA256 hash of the stringified block
   const hash = SHA256(blockString).toString();
 
-  // Step 3: Add the hash to the block object
+  //Step 3: Add the hash to the block object
   block.hash = hash;
 
-  // Add the new block to the blocks array
+  //Add the new block to the blocks array
   blocks.push(block);
 
-  // Return the newly created block
+  // retuen the newly created block
   return block;
 }
 
@@ -162,7 +171,14 @@ function mine() {
   // The id is set to the current block height (length of blocks array)
   const block = {
     id: blocks.length,
+    transactions: [],
   };
+
+  // Make sure we transfer ALL transactions from mempool to block (up to MAX_TRANSACTIONS)
+  while (block.transactions.length < MAX_TRANSACTIONS && mempool.length > 0) {
+    const tx = mempool.shift(); // Remove from mempool
+    block.transactions.push(tx); // Add to block
+  }
 
   // Step 1: Convert the block to a string using JSON.stringify
   const blockString = JSON.stringify(block);
@@ -200,24 +216,30 @@ const mempool = [];
 const blocks = [];
 
 function addTransaction(transaction) {
-  // TODO: add transaction to mempool
   mempool.push(transaction);
 }
 
 function mine() {
   // Create a new block with an id property
-  // The id is set to the current block height (length of blocks array)
   const block = {
     id: blocks.length,
+    transactions: [], // Initialize empty transactions array
   };
 
-  // Step 1: Convert the block to a string using JSON.stringify
+  // Add up to MAX_TRANSACTIONS from the mempool to the block
+  const txCount = Math.min(MAX_TRANSACTIONS, mempool.length);
+  for (let i = 0; i < txCount; i++) {
+    const tx = mempool.shift(); // Remove transaction from mempool
+    block.transactions.push(tx); // Add it to the block
+  }
+
+  // Convert the block to a string using JSON.stringify
   const blockString = JSON.stringify(block);
 
-  // Step 2: Create a SHA256 hash of the stringified block
+  // Create a SHA256 hash of the stringified block
   const hash = SHA256(blockString).toString();
 
-  // Step 3: Add the hash to the block object
+  // Add the hash to the block object
   block.hash = hash;
 
   // Add the new block to the blocks array
