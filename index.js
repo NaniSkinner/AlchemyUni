@@ -294,9 +294,24 @@ module.exports = {
 const SHA256 = require("crypto-js/sha256");
 
 class Block {
+  constructor(data) {
+    this.data = data;
+  }
+
   toHash() {
-    return SHA256("NANI loves her familu").toString();
+    return SHA256(this.data).toString();
   }
 }
 
 module.exports = Block;
+
+// Genisis Block
+const Block = require("./Block");
+
+class Blockchain {
+  constructor() {
+    this.chain = [new Block("Genesis Block")];
+  }
+}
+
+module.exports = Blockchain;
