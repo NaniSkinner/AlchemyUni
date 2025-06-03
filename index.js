@@ -289,4 +289,14 @@ module.exports = {
   mempool,
 };
 
-// Difficulty - geting the work part or proof of work
+// Block and Hashes
+
+const SHA256 = require("crypto-js/sha256");
+
+class Block {
+  toHash() {
+    return SHA256("NANI loves her familu").toString();
+  }
+}
+
+module.exports = Block;
