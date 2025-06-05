@@ -296,10 +296,11 @@ const SHA256 = require("crypto-js/sha256");
 class Block {
   constructor(data) {
     this.data = data;
+    this.previousHash = null; // Initialize previousHash as null
   }
 
   toHash() {
-    return SHA256(this.data).toString();
+    return SHA256(this.data + (this.previousHash || "0")).toString();
   }
 }
 
@@ -310,12 +311,45 @@ const Block = require("./Block");
 
 class Blockchain {
   constructor() {
-    this.chain = [new Block("Genesis Block")];
+    // Create the genesis block
+    const genesisBlock = new Block("Genesis Block");
+    this.chain = [genesisBlock];
   }
 
   addBlock(block) {
+    // Set the previousHash to the hash of the last block in the chain
+    block.previousHash = this.chain[this.chain.length - 1].toHash();
     this.chain.push(block);
   }
 }
 
 module.exports = Blockchain;
+
+// linking blocks
+const Block = require("./Block");
+
+class Blockchain {
+  constructor() {
+    this.chain = [new Block()];
+  }
+
+  addBlock(block) {
+    block.previousHash = this.chain[this.chain.length - 1].toHash();
+    this.chain.push(block);
+  }
+}
+
+module.exports = Blockchain;
+
+const SHA256 = require("crypto-js/sha256");
+
+class Block {
+  constructor(data) {
+    this.data = data;
+  }
+  toHash() {
+    return SHA256(this.data).toString(); // hashing the data stored on this.data
+  }
+}
+
+module.exports = Block;
