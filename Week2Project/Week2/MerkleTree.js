@@ -5,12 +5,36 @@ class MerkleTree {
   }
 
   getRoot() {
-    // For this stage: simple case of exactly 2 leaves
-    const leftLeaf = this.leaves[0];
-    const rightLeaf = this.leaves[1];
+    // Handle base case: single leaf
+    if (this.leaves.length === 1) {
+      return this.leaves[0];
+    }
 
-    // Use the concat function to combine the two leaves
-    return this.concat(leftLeaf, rightLeaf);
+    let currentLayer = this.leaves;
+
+    // Keep combining layers until we have a single root
+    while (currentLayer.length > 1) {
+      const nextLayer = [];
+
+      // Combine pairs in current layer
+      for (let i = 0; i < currentLayer.length; i += 2) {
+        const left = currentLayer[i];
+        const right = currentLayer[i + 1];
+
+        // If there's no right pair, carry the left element up unchanged
+        if (right === undefined) {
+          nextLayer.push(left);
+        } else {
+          // Combine the pair
+          const combined = this.concat(left, right);
+          nextLayer.push(combined);
+        }
+      }
+
+      currentLayer = nextLayer;
+    }
+
+    return currentLayer[0];
   }
 }
 
